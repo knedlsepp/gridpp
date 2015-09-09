@@ -100,6 +100,7 @@ class File {
       std::vector<double> mTimes;
 	  static Uuid mNextTag;
 };
+#include "Grib.h"
 #include "Netcdf.h"
 #include "Fake.h"
 #include "Point.h"

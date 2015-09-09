@@ -46,6 +46,9 @@ File* File::getScheme(std::string iFilename, const Options& iOptions, bool iRead
    else if(type == "ec") {
       file = new FileEc(iFilename, iReadOnly);
    }
+   else if(type == "grib") {
+      file = new FileGrib(iFilename, iReadOnly, iOptions);
+   }
    else if(type == "point") {
       file = new FilePoint(iFilename, iOptions);
    }
@@ -388,6 +391,7 @@ std::string File::getDescriptions() {
    std::stringstream ss;
    ss << FileArome::description();
    ss << FileEc::description();
+   ss << FileGrib::description();
    ss << FilePoint::description();
    ss << FileNorcomQnh::description();
    return ss.str();
