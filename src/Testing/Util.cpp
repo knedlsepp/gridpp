@@ -205,6 +205,21 @@ namespace {
       Util::setShowStatus(false);
       Util::status("test");
    }
+   TEST_F(UtilTest, glob) {
+      std::vector<std::string> strings = Util::glob("testing/files/globdir/test*");
+      ASSERT_EQ(2, strings.size());
+      EXPECT_EQ("testing/files/globdir/test.txt", strings[0]);
+      EXPECT_EQ("testing/files/globdir/test3.txt", strings[1]);
+   }
+   TEST_F(UtilTest, globNoStar) {
+      std::vector<std::string> strings = Util::glob("testing/files/globdir/test.txt");
+      ASSERT_EQ(1, strings.size());
+      EXPECT_EQ("testing/files/globdir/test.txt", strings[0]);
+   }
+   TEST_F(UtilTest, globNoMatch) {
+      std::vector<std::string> strings = Util::glob("testing/files/globdir/testtxt*");
+      ASSERT_EQ(0, strings.size());
+   }
    TEST_F(UtilTest, getDate) {
       EXPECT_FLOAT_EQ(20150528, Util::getDate(1432816155));
       EXPECT_FLOAT_EQ(20001015, Util::getDate(971623971));
