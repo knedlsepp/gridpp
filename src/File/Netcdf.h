@@ -14,14 +14,23 @@ class FileNetcdf : public File {
       ~FileNetcdf();
 
       virtual std::string getVariableName(Variable::Type iVariable) const = 0;
-      //! Add attribute to a variable (overwrite if existing)
-      void setAttribute(int iVar, std::string iName, std::string iValue);
+
+      //! Add attribute to a variable (overwrite if existing). Variable must exist
+      void setAttribute(std::string iVariable, std::string iName, std::string iValue);
+
+      //! Get string attribute belowing to a variable. Variable must exist.
+      //! Returns "" if attribute does not exist.
+      std::string getAttribute(std::string iVariable, std::string iName);
+
       //! Add global attribute to file (overwrite if existing)
       void setGlobalAttribute(std::string iName, std::string iValue);
+
       //! Add global attribute to file (append to attribute if existing)
       void appendGlobalAttribute(std::string iName, std::string iValue);
+
       //! Add global attribute to file (prepend to attribute if existing)
       void prependGlobalAttribute(std::string iName, std::string iValue);
+
       //! Get global string attribute. Returns "" if non-existant.
       std::string getGlobalAttribute(std::string iName);
    protected:
@@ -33,6 +42,10 @@ class FileNetcdf : public File {
       bool hasVariableCore(Variable::Type iVariable) const;
       bool hasVariableCore(std::string iVariable) const;
 
+      //! Add attribute to a variable (overwrite if existing)
+      void setAttribute(int iVar, std::string iName, std::string iValue);
+      std::string getAttribute(int iVar, std::string iName);
+
       int    getDim(std::string iDim) const;
       int    getVar(std::string iVar) const;
       int    getDimSize(std::string iDim) const;
@@ -42,7 +55,7 @@ class FileNetcdf : public File {
       bool   hasVar(std::string iVar) const;
       static bool   hasDim(int iFile, std::string iDim);
       static bool   hasVar(int iFile, std::string iVar);
-      float getMissingValue(int iVar)const ;
+      float getMissingValue(int iVar) const;
       void  setMissingValue(int iVar, float iValue)const ;
       void writeTimes();
       void writeReferenceTime();

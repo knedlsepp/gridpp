@@ -18,10 +18,22 @@ FileEc::FileEc(std::string iFilename, bool iReadOnly) : FileNetcdf(iFilename, iR
    // Retrieve lat/lon/elev
    int vLat = getLatVar();
    int vLon = getLonVar();
-   int vElev = getVar("altitude");
    mLats  = getGridValues(vLat);
    mLons  = getGridValues(vLon);
-   mElevs = getGridValues(vElev);
+
+   if(hasVar("altitude")) {
+      int vElev = getVar("altitude");
+      mElevs = getGridValues(vElev);
+   }
+   else {
+      mElevs.resize(getNumLat());
+      for(int i = 0; i < getNumLat(); i++) {
+         mElevs[i].resize(getNumLon());
+         for(int j = 0; j < getNumLon(); j++) {
+            mElevs[i][j] = Util::MV;
+         }
+      }
+   }
 
    // TODO: No land fraction info in EC files?
    mLandFractions.resize(getNumLat());
@@ -105,6 +117,9 @@ void FileEc::writeCore(std::vector<Variable::Type> iVariables) {
    for(int v = 0; v < iVariables.size(); v++) {
       Variable::Type varType = iVariables[v];
       std::string variable = getVariableName(varType);
+      if(variable == "") {
+         Util::error("Cannot write variable '" + variable + "' because there EC output file has no definition for it");
+      }
       int var = Util::MV;
       if(!hasVariableCore(varType)) {
          // Create variable
@@ -115,7 +130,7 @@ void FileEc::writeCore(std::vector<Variable::Type> iVariables) {
          int dLat = getLatDim();
          int dims[5] = {dTime, dSurface, dEns, dLat, dLon};
          int status = nc_def_var(mFile, variable.c_str(), NC_FLOAT, 5, dims, &var);
-         handleNetcdfError(status, "could not define variable");
+         handleNetcdfError(status, "could not define variable '" + variable + "'");
       }
    }
    status = ncendef(mFile);
@@ -195,6 +210,9 @@ std::string FileEc::getVariableName(Variable::Type iVariable) const {
    }
    else if(iVariable == Variable::V) {
       return "y_wind_10m";
+   }
+   else if(iVariable == Variable::W) {
+      return "windspeed_10m";
    }
    else if(iVariable == Variable::MSLP) {
       return "sea_level_pressure";

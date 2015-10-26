@@ -43,8 +43,8 @@ class Util {
       //! @param lon1 Longitude in degrees of point 1
       //! @param lat2 Latitude in degrees of point 2
       //! @param lon2 Longitude in degrees of point 2
-      //! @param approx Should an approximation be used? If true, assumes a flat earth in the
-      //!               vicinity of the two points. Computes the result much faster.
+      //! @param approx Should an approximation be used? If true, use equirectangular approximation
+      //!               Computes the result much faster.
       //! @return Distance in meters
       static float getDistance(float lat1, float lon1, float lat2, float lon2, bool approx=false);
 
@@ -129,8 +129,10 @@ class Util {
       };
 
       enum Operator {
-         OperatorAdditive       = 0,
-         OperatorMultiplicative = 10,
+         OperatorAdd       = 0,
+         OperatorSubtract  = 10,
+         OperatorMultiply  = 20,
+         OperatorDivide    = 30,
       };
 
       //! Applies statistics operator to array. Missing values are ignored.

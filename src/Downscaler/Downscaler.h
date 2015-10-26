@@ -19,21 +19,20 @@ class Downscaler : public Scheme {
       virtual std::string name() const = 0;
 
       //! Create a nearest-neighbour map. For each grid point in iTo, find the index into the grid
-      //! in iFrom of the nearest neighbour. Uses a brute force method by checking every
-      //! neighbour.
+      //! in iFrom of the nearest neighbour. Uses a 2-d BST for search speedup.
       //! @param iI I-indices of nearest point. Set to Util::MV if no nearest neighbour.
       //! @param iJ J-indices of nearest point. Set to Util::MV if no nearest neighbour.
       static void getNearestNeighbour(const File& iFrom, const File& iTo, vec2Int& iI, vec2Int& iJ);
 
-      //! A faster version of getNearestNeighbour, which assuming that latitudes and longitudes in
-      //! iFrom are sorted. Defaults to the slow method if lats/lons are not sorted.
-      static void getNearestNeighbourFast(const File& iFrom, const File& iTo, vec2Int& iI, vec2Int& iJ);
+      //! Reference realization of getNearestNeighbour. Uses a brute force method by checking every
+      //! neighbour.
+      static void getNearestNeighbourBruteForce(const File& iFrom, const File& iTo, vec2Int& iI, vec2Int& iJ);
 
       //! Find the index into the lat/lon arrays in iFrom that is nearest to the point
       //! defined by iLon,iLat
       //! @param iI I-index of nearest point. Set to Util::MV if no nearest neighbour.
       //! @param iJ J-index of nearest point. Set to Util::MV if no nearest neighbour.
-      static void getNearestNeighbour(const File& iFrom, float iLon, float iLat, int& iI, int &iJ);
+      static void getNearestNeighbourBruteForce(const File& iFrom, float iLon, float iLat, int& iI, int &iJ);
 
       static std::string getDescriptions();
    protected:

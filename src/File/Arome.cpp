@@ -13,7 +13,7 @@ FileArome::FileArome(std::string iFilename, bool iReadOnly) : FileNetcdf(iFilena
 
    mLats = getLatLonVariable("latitude");
    mLons = getLatLonVariable("longitude");
-   if(hasVariableCore("surface_geopotential")) {
+   if(hasVar("surface_geopotential")) {
       FieldPtr elevField = getFieldCore("surface_geopotential", 0);
       mElevs.resize(getNumLat());
       for(int i = 0; i < getNumLat(); i++) {
@@ -25,11 +25,20 @@ FileArome::FileArome(std::string iFilename, bool iReadOnly) : FileNetcdf(iFilena
       }
       std::cout << "Deriving altitude from geopotential height in " << getFilename() << std::endl;
    }
-   else {
+   else if(hasVar("altitude")) {
       mElevs = getLatLonVariable("altitude");
    }
+   else {
+      mElevs.resize(getNumLat());
+      for(int i = 0; i < getNumLat(); i++) {
+         mElevs[i].resize(getNumLon());
+         for(int j = 0; j < getNumLon(); j++) {
+            mElevs[i][j] = Util::MV;
+         }
+      }
+   }
 
-   if(hasVariableCore("land_area_fraction")) {
+   if(hasVar("land_area_fraction")) {
       mLandFractions = getLatLonVariable("land_area_fraction");
    }
    else {
@@ -151,14 +160,14 @@ void FileArome::writeCore(std::vector<Variable::Type> iVariables) {
    for(int v = 0; v < iVariables.size(); v++) {
       Variable::Type varType = iVariables[v];
       std::string variable = getVariableName(varType);
-      int var;
       if(!hasVariableCore(varType)) {
          // Create variable
          int dTime    = getDim("time");
          int dLon     = getDim("x");
          int dLat     = getDim("y");
          int dims[3]  = {dTime, dLat, dLon};
-         int status = nc_def_var(mFile,variable.c_str(), NC_DOUBLE, 1, dims, &var);
+         int var = Util::MV;
+         int status = nc_def_var(mFile,variable.c_str(), NC_FLOAT, 3, dims, &var);
          handleNetcdfError(status, "could not define variable");
       }
    }
@@ -214,7 +223,7 @@ void FileArome::writeCore(std::vector<Variable::Type> iVariables) {
             }
             else {
                std::stringstream ss;
-               ss << "Cannot write variable '" << variable << "' from '" << getFilename() << "'";
+               ss << "Cannot write variable '" << variable << "' to '" << getFilename() << "'";
                Util::error(ss.str());
             }
             setAttribute(var, "coordinates", "longitude latitude");
@@ -247,6 +256,15 @@ std::string FileArome::getVariableName(Variable::Type iVariable) const {
    else if(iVariable == Variable::Pop6h) {
       return "precipitation_amount_prob_low_6h";
    }
+   else if(iVariable == Variable::PrecipLow) {
+      return "precipitation_amount_low_estimate";
+   }
+   else if(iVariable == Variable::PrecipMiddle) {
+      return "precipitation_amount_middle_estimate";
+   }
+   else if(iVariable == Variable::PrecipHigh) {
+      return "precipitation_amount_high_estimate";
+   }
    else if(iVariable == Variable::U) {
       return "x_wind_10m";
    }
@@ -278,6 +296,12 @@ std::string FileArome::getVariableName(Variable::Type iVariable) const {
       // TODO: What name to use?
       return "qnh";
    }
+   else if(iVariable == Variable::SwinAcc) {
+      return "integral_of_surface_downwelling_shortwave_flux_in_air_wrt_time";
+   }
+   else if(iVariable == Variable::LwinAcc) {
+      return "integral_of_surface_downwelling_longwave_flux_in_air_wrt_time";
+   }
    else if(iVariable == Variable::Fake) {
       return "fake";
    }
@@ -290,10 +314,23 @@ std::string FileArome::getVariableName(Variable::Type iVariable) const {
 vec2 FileArome::getLatLonVariable(std::string iVar) const {
    int var = getVar(iVar);
    float MV = getMissingValue(var);
-   long count[2] = {getNumLat(), getNumLon()};
+   int numDims;
+   int status = nc_inq_varndims(mFile, var, &numDims);
+   handleNetcdfError(status, "could not determine number of dimensions for variable " + iVar);
    float* values = new float[getNumLon()*getNumLat()];
-   int status = nc_get_var_float(mFile, var, values);
-   handleNetcdfError(status, "could not get data from variable " + iVar);
+   if(numDims == 2) {
+      status = nc_get_var_float(mFile, var, values);
+      handleNetcdfError(status, "could not get data from variable " + iVar);
+   }
+   else if(numDims == 4) {
+      size_t count[4] = {1,1,getNumLat(),getNumLon()};
+      size_t start[4] = {0,0,0,0};
+      int status = nc_get_vara_float(mFile, var, start, count, values);
+      handleNetcdfError(status, "could not get data from variable " + iVar);
+   }
+   else {
+      Util::error("Cannot read " + iVar + " from AROME file. Must have either 2 or 4 dimensions");
+   }
    vec2 grid;
    grid.resize(getNumLat());
    for(int i = 0; i < getNumLat(); i++) {
