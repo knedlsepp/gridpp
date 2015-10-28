@@ -9,6 +9,7 @@ before_install:
  - sudo apt-get update -qq
  - sudo apt-get install pbuilder aptitude ubuntu-dev-tools libgsl0-dev libblas-dev libgrib-api-dev libboost-system-dev libfimex-dev
  - echo "OTHERMIRROR=\"deb http://ppa.launchpad.net/heiko-klein/fimex/ubuntu ${DIST} main\"" > ~/.pbuilderrc
+ - echo "HOOKDIR=\"~/.pbuilder-hooks/\"" >> ~/.pbuilderrc
  - for CHAR in $(seq 0 9) a b c d e f; do sudo mkdir -p /var/cache/pbuilder/ccache/${CHAR}; done
  - pbuilder-dist ${DIST} create --debootstrapopts --variant=buildd
  - pbuilder-dist ${DIST} update --release-only
