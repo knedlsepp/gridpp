@@ -5,8 +5,9 @@ env:
  - DIST=trusty
 
 before_install:
+ - sudo add-apt-repository ppa:heiko-klein/fimex -y
  - sudo apt-get update -qq
- - sudo apt-get install pbuilder aptitude ubuntu-dev-tools libgsl0-dev libblas-dev
+ - sudo apt-get install pbuilder aptitude ubuntu-dev-tools libgsl0-dev libblas-dev libgrib-api-dev libboost-system-dev libfimex-dev
  - for CHAR in $(seq 0 9) a b c d e f; do sudo mkdir -p /var/cache/pbuilder/ccache/${CHAR}; done
  - pbuilder-dist ${DIST} create --debootstrapopts --variant=buildd
  - sudo pip install cpp-coveralls
