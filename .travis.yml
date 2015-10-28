@@ -18,7 +18,7 @@ before_install:
 script:
  - sed -i "s:precise:${DIST}:g" debian/changelog
  - debuild -S -uc
- - pbuilder-dist --allow-untrusted ${DIST} build ../*.dsc
+ - pbuilder-dist ${DIST} build --allow-untrusted ../*.dsc
 # Rebuild so that coverage stats can be collected
  - sudo debuild-pbuilder -us -uc
 
