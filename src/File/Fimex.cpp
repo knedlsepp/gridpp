@@ -17,8 +17,8 @@
 FileFimex::FileFimex(std::string iFilename, bool iReadOnly, const Options& iOptions) :
       File(iFilename) {
 
-   std::string filenameFormat;
-   iOptions.getValue("filenameFormat", filenameFormat)
+   // std::string filenameFormat;
+   // iOptions.getValue("filenameFormat", filenameFormat);
    mFiles = Util::glob(getFilename());
    if(mFiles.size() == 0) {
       std::stringstream ss;
