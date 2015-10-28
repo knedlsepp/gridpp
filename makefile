@@ -1,12 +1,12 @@
 # Change these to suit your system
 CXX      ?= g++
-IFLAGS   = -I/usr/include/
+IFLAGS   = -I/usr/include/ -I/usr/include/libxml2/
 LFLAGS   = -L/usr/lib
 CFLAGS   = -Wall -Wno-reorder -Wno-sign-compare
 
 # Flags for optimized compilation
 CFLAGS_O = -O3 -fopenmp $(CFLAGS)
-LIBS_O   = -lnetcdf -lgsl -lblas -lgrib_api
+LIBS_O   = -lnetcdf -lgsl -lblas -lgrib_api -lfimex -lboost_system
 
 # Flags for debug compilation
 CFLAGS_D = -fPIC -g -pg -rdynamic -fprofile-arcs -ftest-coverage -coverage -DDEBUG $(CFLAGS)

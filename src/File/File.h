@@ -101,6 +101,7 @@ class File {
 	  static Uuid mNextTag;
 };
 #include "Grib.h"
+#include "Fimex.h"
 #include "Netcdf.h"
 #include "Fake.h"
 #include "Point.h"

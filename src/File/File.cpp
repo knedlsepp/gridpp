@@ -49,6 +49,9 @@ File* File::getScheme(std::string iFilename, const Options& iOptions, bool iRead
    else if(type == "grib") {
       file = new FileGrib(iFilename, iReadOnly, iOptions);
    }
+   else if(type == "fimex") {
+      file = new FileFimex(iFilename, iReadOnly, iOptions);
+   }
    else if(type == "point") {
       file = new FilePoint(iFilename, iOptions);
    }
