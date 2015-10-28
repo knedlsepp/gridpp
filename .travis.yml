@@ -11,6 +11,7 @@ before_install:
  - echo "OTHERMIRROR=\"deb http://ppa.launchpad.net/heiko-klein/fimex/ubuntu ${DIST} main\"" > ~/.pbuilderrc
  - for CHAR in $(seq 0 9) a b c d e f; do sudo mkdir -p /var/cache/pbuilder/ccache/${CHAR}; done
  - pbuilder-dist ${DIST} create --debootstrapopts --variant=buildd
+ - pbuilder-dist ${DIST} update --release-only
  - sudo pip install cpp-coveralls
 
 script:
