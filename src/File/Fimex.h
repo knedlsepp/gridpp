@@ -22,8 +22,8 @@ class FileFimex : public File {
       void writeCore(std::vector<Variable::Type> iVariables);
       bool hasVariableCore(Variable::Type iVariable) const;
    private:
-      std::vector<std::string> mFiles;
       MetNoFimex::CDM mCdm;
       boost::shared_ptr<MetNoFimex::CDMReader> mReader;
+      bool mDebug;
 };
 #endif
