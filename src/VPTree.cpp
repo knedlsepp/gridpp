@@ -8,6 +8,28 @@ namespace {
    }
 }
 
+VPTree::VPTree() : mRoot(NULL) {
+}
+
+VPTree::VPTree(const vec2& iLats, const vec2& iLons) {
+   build(iLats, iLons);
+}
+
+VPTree& VPTree::operator=(const VPTree& other) {
+   if(this == &other)
+      return *this;
+   mLats = other.mLats;
+   mLons = other.mLons;
+   build(mLats, mLons);
+   return *this;
+}
+
+VPTree::VPTree(const VPTree& other) {
+   mLats = other.mLats;
+   mLons = other.mLons;
+   build(mLats, mLons);
+}
+
 void VPTree::subTree(const size_t from, const size_t to, VPTree::unode& root) {
 
    unode node(new VPTree::TreeNode());
@@ -91,8 +113,9 @@ void VPTree::nearestNeighbour(const VPTree::unode& root, const double lon, const
 
 }
 
-void VPTree::build(const vec2& iLats, const vec2& iLons)
-{
+void VPTree::build(const vec2& iLats, const vec2& iLons) {
+   mLats = iLats;
+   mLons = iLons;
 
    if(iLats.size() != iLons.size())
       Util::error("Cannot initialize VPTree, lats and lons not the same size");
@@ -166,6 +189,16 @@ void VPTree::getNearestNeighbour(const File& iTo, vec2Int& iI, vec2Int& iJ) cons
          }
       }
    }
+}
+
+void VPTree::getNearestNeighbour(float iLat, float iLon, int& iI, int& iJ) const {
+   const size_t bigVal = mCoords.size();
+   double nrstDistance = 1.E20;
+   size_t nrstIndex = bigVal;
+   nearestNeighbour(mRoot, iLon, iLat, nrstDistance, nrstIndex);
+   iI = mCoords[nrstIndex].ipos;
+   iJ = mCoords[nrstIndex].jpos;
+   return;
 }
 
 double VPTree::getDistance(const Sincos& lat1, const Sincos& lon1, const Sincos& lat2, const Sincos& lon2) {
