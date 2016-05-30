@@ -6,7 +6,7 @@
 #include "../Location.h"
 #include "../Options.h"
 #include "../Scheme.h"
-#include "../KDTree.h"
+#include "../VPTree.h"
 
 //! Represents a collection of parameters, one set for each location and forecast time
 //! Parameters can be missing for some locations/times
@@ -74,7 +74,7 @@ class ParameterFile : public Scheme {
       // Storing nearest neighbour information. Create a tree with the locations so that lookup for
       // a location is fast. However, every time a new location is added to mParameters, the tree
       // must be recomputed.
-      mutable KDTree mNearestNeighbourTree;
+      mutable VPTree mNearestNeighbourTree;
       // Locations in the tree
       mutable std::vector<Location> mLocations;
 };

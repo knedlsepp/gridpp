@@ -3,7 +3,7 @@
 
 #include "Downscaler.h"
 #include "../File/File.h"
-#include "../KDTree.h"
+#include "../VPTree.h"
 
 std::map<Uuid, std::map<Uuid, std::pair<vec2Int, vec2Int> > > Downscaler::mNeighbourCache;
 
@@ -137,7 +137,7 @@ void Downscaler::getNearestNeighbour(const File& iFrom, const File& iTo, vec2Int
       }
    }
 
-   KDTree searchTree(iFrom.getLats(), iFrom.getLons());
+   VPTree searchTree(iFrom.getLats(), iFrom.getLons());
    searchTree.getNearestNeighbour(iTo, iI, iJ);
 
    addToCache(iFrom, iTo, iI, iJ);
