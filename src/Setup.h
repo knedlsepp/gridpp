@@ -41,7 +41,7 @@ class Setup {
       // In some cases, it is not possible to open the same file first as readonly and then writeable
       // (for NetCDF). Therefore, use the same filehandle for both if the files are the same. Remember
       // to not free the memory of both files.
-      std::map<std::string, File*> mFileMap; // filename, file handle
+      std::map<std::string, std::unique_ptr<File>> mFileMap; // filename, file handle
       bool hasFile(std::string iFilename) const;
 };
 #endif

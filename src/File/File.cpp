@@ -14,8 +14,8 @@ File::File(std::string iFilename, const Options& iOptions) :
    createNewTag();
 }
 
-File* File::getScheme(std::string iFilename, const Options& iOptions, bool iReadOnly) {
-   File* file;
+std::unique_ptr<File> File::getScheme(std::string iFilename, const Options& iOptions, bool iReadOnly) {
+   std::unique_ptr<File> file;
    // Determine the filetype, either through user-specified option type=...
    // or by autodetecting.
    std::string type = "";
@@ -41,24 +41,24 @@ File* File::getScheme(std::string iFilename, const Options& iOptions, bool iRead
       }
    }
    else if(type == "arome") {
-      file = new FileArome(iFilename, iOptions, iReadOnly);
+      file = std::make_unique<FileArome>(iFilename, iOptions, iReadOnly);
    }
    else if(type == "ec") {
-      file = new FileEc(iFilename, iOptions, iReadOnly);
+      file = std::make_unique<FileEc>(iFilename, iOptions, iReadOnly);
    }
    else if(type == "point") {
-      file = new FilePoint(iFilename, iOptions);
+      file = std::make_unique<FilePoint>(iFilename, iOptions);
    }
    else if(type == "text") {
-      file = new FileText(iFilename, iOptions);
+      file = std::make_unique<FileText>(iFilename, iOptions);
    }
    else if(type == "norcomQnh") {
-      file = new FileNorcomQnh(iFilename, iOptions);
+      file = std::make_unique<FileNorcomQnh>(iFilename, iOptions);
    }
    else {
       Util::error("Could not understand file type " + type);
    }
-   return file;
+   return std::move(file);
 }
 
 FieldPtr File::getField(Variable::Type iVariable, int iTime) const {

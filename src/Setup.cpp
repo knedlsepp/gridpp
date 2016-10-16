@@ -49,32 +49,23 @@ Setup::Setup(const std::vector<std::string>& argv) {
    }
 
    for(int f = 0; f < outputFilenames.size(); f++) {
-
-      File* outputFile;
       if(!hasFile(outputFilenames[f])) {
-         outputFile  = File::getScheme(outputFilenames[f], outputOptions, false);
-         if(outputFile == NULL) {
+         std::unique_ptr<File> outputFile = File::getScheme(outputFilenames[f], outputOptions, false);
+         if(!outputFile) {
             Util::error("File '" + outputFilenames[f] + " is invalid");
          }
-         mFileMap[outputFilenames[f]] = outputFile;
+         mFileMap[outputFilenames[f]] = std::move(outputFile);
       }
-      else {
-         outputFile = mFileMap[outputFilenames[f]];
-      }
-      outputFiles.push_back(outputFile);
+      outputFiles.push_back(mFileMap[outputFilenames[f]].get());
 
-      File* inputFile;
       if(!hasFile(inputFilenames[f])) {
-         inputFile  = File::getScheme(inputFilenames[f], inputOptions, true);
+         std::unique_ptr<File> inputFile = File::getScheme(inputFilenames[f], inputOptions, true);
          if(inputFile == NULL) {
             Util::error("File '" + inputFilenames[f] + " is invalid");
          }
-         mFileMap[inputFilenames[f]] = inputFile;
+         mFileMap[inputFilenames[f]] = std::move(inputFile);
       }
-      else {
-         inputFile = mFileMap[inputFilenames[f]];
-      }
-      inputFiles.push_back(inputFile);
+      inputFiles.push_back(mFileMap[inputFilenames[f]].get());
    }
 
    // Implement a finite state machine
@@ -473,10 +464,6 @@ Setup::Setup(const std::vector<std::string>& argv) {
    }
 }
 Setup::~Setup() {
-   std::map<std::string, File*>::const_iterator it = mFileMap.begin();
-   for(it = mFileMap.begin(); it != mFileMap.end(); it++)
-      delete it->second;
-
    for(int i = 0; i < variableConfigurations.size(); i++) {
       delete variableConfigurations[i].downscaler;
    }
@@ -486,6 +473,6 @@ std::string Setup::defaultDownscaler() {
 }
 
 bool Setup::hasFile(std::string iFilename) const {
-   std::map<std::string, File*>::const_iterator it = mFileMap.find(iFilename);
+   std::map<std::string, std::unique_ptr<File>>::const_iterator it = mFileMap.find(iFilename);
    return it != mFileMap.end();
 }

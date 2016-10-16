@@ -18,7 +18,7 @@ class File {
       virtual ~File();
 
       //! Insantiates a file. Returns null if file does not exist or cannot be parsed.
-      static File* getScheme(std::string iFilename, const Options& iOptions, bool iReadOnly=false);
+      static std::unique_ptr<File> getScheme(std::string iFilename, const Options& iOptions, bool iReadOnly=false);
 
       FieldPtr getField(Variable::Type iVariable, int iTime) const;
 

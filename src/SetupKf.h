@@ -15,8 +15,8 @@ class File;
 class SetupKf {
    public:
       std::unique_ptr<ParameterFile> output;
-      File* fcstFile;
-      File* obsFile;
+      std::unique_ptr<File> fcstFile;
+      std::unique_ptr<File> obsFile;
       Calibrator* method;
       Downscaler* downscaler; // Not used
       Variable::Type variable;

@@ -53,18 +53,18 @@ SetupTrain::SetupTrain(const std::vector<std::string>& argv) {
       Util::error("No valid obs or fcst files");
    }
    for(int i = 0; i < obsFilenames.size(); i++) {
-      File* file = File::getScheme(obsFilenames[i], obsOptions, true);
+      std::unique_ptr<File> file = File::getScheme(obsFilenames[i], obsOptions, true);
       if(file == NULL) {
          Util::error("Could not open '" + obsFilenames[i] + "'");
       }
-      observations.push_back(file);
+      observations.push_back(std::move(file));
    }
    for(int i = 0; i < fcstFilenames.size(); i++) {
-      File* file = File::getScheme(fcstFilenames[i], fcstOptions, true);
+      std::unique_ptr<File> file = File::getScheme(fcstFilenames[i], fcstOptions, true);
       if(file == NULL) {
          Util::error("Could not open '" + fcstFilenames[i] + "'");
       }
-      forecasts.push_back(file);
+      forecasts.push_back(std::move(file));
    }
 
    Options oOptions;
@@ -241,9 +241,5 @@ SetupTrain::SetupTrain(const std::vector<std::string>& argv) {
    }
 }
 SetupTrain::~SetupTrain() {
-   for(int i = 0; i < observations.size(); i++)
-      delete observations[i];
-   for(int i = 0; i < forecasts.size(); i++)
-      delete forecasts[i];
    delete downscaler;
 }

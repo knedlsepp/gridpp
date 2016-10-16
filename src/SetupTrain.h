@@ -15,8 +15,8 @@ class File;
 class SetupTrain {
    public:
       std::unique_ptr<ParameterFile> output;
-      std::vector<File*> forecasts;
-      std::vector<File*> observations;
+      std::vector<std::unique_ptr<File>> forecasts;
+      std::vector<std::unique_ptr<File>> observations;
       std::unique_ptr<Calibrator> method;
       Downscaler* downscaler;
       Variable::Type variable;
