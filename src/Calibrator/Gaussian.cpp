@@ -222,7 +222,7 @@ Parameters CalibratorGaussian::train(const std::vector<ObsEns>& iData) const {
    }
 
    int N = mean.size();
-   double* p = new double[1+3*N]; 
+   std::vector<double> p(1+3*N);
    p[0] = N;
    for(int n = 0; n < N; n++) {
       p[1+n] = obs[n];
@@ -245,7 +245,7 @@ Parameters CalibratorGaussian::train(const std::vector<ObsEns>& iData) const {
    gsl_multimin_function my_func;
    my_func.n = mNumParameters;
    my_func.f = &CalibratorGaussian::my_f;
-   my_func.params = (void *)p;
+   my_func.params = (void *)p.data();
 
    // Initialize parameters
    gsl_vector* x = gsl_vector_alloc (mNumParameters);

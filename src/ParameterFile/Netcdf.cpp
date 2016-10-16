@@ -7,6 +7,7 @@
 #include <set>
 #include <fstream>
 #include <math.h>
+#include <vector>
 
 ParameterFileNetcdf::ParameterFileNetcdf(const Options& iOptions, bool iIsNew) : ParameterFile(iOptions, iIsNew),
       mDimName("coeff"),
@@ -75,13 +76,13 @@ ParameterFileNetcdf::ParameterFileNetcdf(const Options& iOptions, bool iIsNew) :
    }
 
    int vTime = getVar(mFile, "time");
-   double* times = new double[nTime];
-   status = nc_get_var_double(mFile, vTime, times);
+   std::vector<double> times(nTime);
+   status = nc_get_var_double(mFile, vTime, times.data());
    handleNetcdfError(status, "could not get times");
 
    int var = getVar(mFile, mVarName);
    int totalNumParameters = nLat*nLon*nTime*nCoeff;
-   float* values = getNcFloats(mFile, var);
+   std::vector<float> values = getNcFloats(mFile, var);
 
    // Initialize parameters to empty and then fill in later
    std::vector<Location> locations;
@@ -169,9 +170,6 @@ ParameterFileNetcdf::ParameterFileNetcdf(const Options& iOptions, bool iIsNew) :
       setMaxTime(std::max(getMaxTime(), timeIndex));
       index++;
    }
-
-   delete[] values;
-   delete[] times;
 
    endDefineMode();
 
@@ -317,41 +315,37 @@ void ParameterFileNetcdf::write() const {
    endDefineMode();
 
    double s = Util::clock();
-   float* lats  = new float[locations.size()];
-   float* lons  = new float[locations.size()];
-   float* elevs = new float[locations.size()];
+   std::vector<float> lats(locations.size());
+   std::vector<float> lons(locations.size());
+   std::vector<float> elevs(locations.size());
    // Write locations
    for(int i = 0; i < locations.size(); i++) {
       lats[i] = locations[i].lat();
       lons[i] = locations[i].lon();
       elevs[i] = locations[i].elev();
    }
-   status = nc_put_var_float(mFile, vLat, lats);
+   status = nc_put_var_float(mFile, vLat, lats.data());
    handleNetcdfError(status, "could not write latitude");
-   delete[] lats;
-   status = nc_put_var_float(mFile, vLon, lons);
+   status = nc_put_var_float(mFile, vLon, lons.data());
    handleNetcdfError(status, "could not write longitude");
-   delete[] lons;
-   status = nc_put_var_float(mFile, vElev, elevs);
+   status = nc_put_var_float(mFile, vElev, elevs.data());
    handleNetcdfError(status, "could not write altitude");
-   delete[] elevs;
 
    // Write times
-   int* timesAr = new int[nTime];
+   std::vector<int> timesAr(nTime);
    for(int t = 0; t < times.size(); t++) {
       timesAr[t] = times[t];
    }
    size_t countTime = nTime;
    size_t startTime = 0;
-   status = nc_put_vara_int(mFile, vTime, &startTime, &countTime, timesAr);
+   status = nc_put_vara_int(mFile, vTime, &startTime, &countTime, timesAr.data());
    handleNetcdfError(status, "could not write times");
-   delete[] timesAr;
 
    double e = Util::clock();
    std::cout << "Writing times/locations: " << e - s << std::endl;
 
    // Write parameters
-   float* values = new float[nTime*nCoeff*nLat];
+   std::vector<float> values(nTime*nCoeff*nLat);
    for(int t = 0; t < times.size(); t++) {
       int time = times[t];
       for(int i = 0; i < locations.size(); i++) {
@@ -377,11 +371,10 @@ void ParameterFileNetcdf::write() const {
    std::cout << "Rearranging parameters: " << e2 - e << std::endl;
    size_t count[4] = {static_cast<size_t>(nTime), static_cast<size_t>(nLat), 1, static_cast<size_t>(nCoeff)};
    size_t start[4] = {0, 0, 0, 0};
-   status = nc_put_vara_float(mFile, var, start, count, values);
+   status = nc_put_vara_float(mFile, var, start, count, values.data());
    handleNetcdfError(status, "could not write data");
    double e3 = Util::clock();
    std::cout << "Writing parameters: " << e3 - e2 << std::endl;
-   delete[] values;
 }
 
 void ParameterFileNetcdf::handleNetcdfError(int status, std::string message) const {
@@ -457,10 +450,10 @@ std::vector<int> ParameterFileNetcdf::getIndices(int i, const std::vector<int>& 
    return indices;
 }
 
-float* ParameterFileNetcdf::getNcFloats(int iFile, int iVar) {
+std::vector<float> ParameterFileNetcdf::getNcFloats(int iFile, int iVar) {
    int size = NetcdfUtil::getTotalSize(iFile, iVar);
-   float* values = new float[size];
-   int status = nc_get_var_float(iFile, iVar, values);
+   std::vector<float> values(size);
+   int status = nc_get_var_float(iFile, iVar, values.data());
    char name[512];
    status = nc_inq_varname(iFile, iVar, name);
    handleNetcdfError(status, "could not get variable name");
@@ -497,8 +490,8 @@ vec2 ParameterFileNetcdf::getGridValues(int iFile, int iVar) const {
    if(numDims == 1) {
       int dim = dims[0];
       long size = getDimSize(iFile, dim);
-      float* values = new float[size];
-      nc_get_var_float(iFile, iVar, values);
+      std::vector<float> values(size);
+      nc_get_var_float(iFile, iVar, values.data());
       // Latitude variable
       if(dim == getLatDim(iFile)) {
          for(int i = 0; i < nLat; i++) {
@@ -520,7 +513,6 @@ vec2 ParameterFileNetcdf::getGridValues(int iFile, int iVar) const {
          ss << "Missing lat or lon dimension";
          Util::error(ss.str());
       }
-      delete[] values;
    }
    // We have a projected grid, where lat and lons are provided for each grid point
    else {
@@ -549,8 +541,8 @@ vec2 ParameterFileNetcdf::getGridValues(int iFile, int iVar) const {
          ss << "Missing lat and/or lon dimensions";
          Util::error(ss.str());
       }
-      float* values = new float[size];
-      nc_get_var_float(iFile, iVar, values);
+      std::vector<float> values(size);
+      nc_get_var_float(iFile, iVar, values.data());
       for(int i = 0; i < nLat; i++) {
          for(int j = 0; j < nLon; j++) {
             // Latitude dimension is ordered first
@@ -563,7 +555,6 @@ vec2 ParameterFileNetcdf::getGridValues(int iFile, int iVar) const {
             }
          }
       }
-      delete[] values;
    }
    return grid;
 }

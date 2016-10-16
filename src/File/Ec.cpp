@@ -48,11 +48,10 @@ FileEc::FileEc(std::string iFilename, const Options& iOptions, bool iReadOnly) :
 
    if(hasVar("time")) {
       int vTime = getVar("time");
-      double* times = new double[mNTime];
-      int status = nc_get_var_double(mFile, vTime, times);
+      std::vector<double> times(mNTime);
+      int status = nc_get_var_double(mFile, vTime, times.data());
       handleNetcdfError(status, "could not get times");
-      setTimes(std::vector<double>(times, times+mNTime));
-      delete[] times;
+      setTimes(times);
    }
    else {
       std::vector<double> times;
@@ -84,8 +83,8 @@ FieldPtr FileEc::getFieldCore(Variable::Type iVariable, int iTime) const {
    size_t count[5] = {1, 1, static_cast<size_t>(nEns), static_cast<size_t>(nLat), static_cast<size_t>(nLon)};
    size_t start[5] = {static_cast<size_t>(iTime), 0, 0, 0, 0};
    size_t size = 1*1*nEns*nLat*nLon;
-   float* values = new float[size];
-   nc_get_vara_float(mFile, var, start, count, values);
+   std::vector<float> values(size);
+   nc_get_vara_float(mFile, var, start, count, values.data());
    float MV = getMissingValue(var);
 
    float offset = getOffset(var);
@@ -109,7 +108,6 @@ FieldPtr FileEc::getFieldCore(Variable::Type iVariable, int iTime) const {
          }
       }
    }
-   delete[] values;
    return field;
 }
 
@@ -159,7 +157,7 @@ void FileEc::writeCore(std::vector<Variable::Type> iVariables) {
       int var = getVar(variable);
       float MV = getMissingValue(var); // The output file's missing value indicator
       size_t size = 1*1*mNEns*mNLat*mNLon;
-      float* values = new float[size];
+      std::vector<float> values(size);
       for(int t = 0; t < mNTime; t++) {
          float offset = getOffset(var);
          float scale = getScale(var);
@@ -188,7 +186,7 @@ void FileEc::writeCore(std::vector<Variable::Type> iVariables) {
             int numDims = getNumDims(var);
             if(numDims == 5) {
                size_t count[5] = {1, 1, static_cast<size_t>(mNEns), static_cast<size_t>(mNLat), static_cast<size_t>(mNLon)};
-               int status = nc_put_vara_float(mFile, var, start, count, values);
+               int status = nc_put_vara_float(mFile, var, start, count, values.data());
                handleNetcdfError(status, "could not write variable " + variable);
             }
             else {
@@ -199,7 +197,6 @@ void FileEc::writeCore(std::vector<Variable::Type> iVariables) {
             }
          }
       }
-      delete[] values;
    }
 }
 
@@ -280,8 +277,8 @@ vec2 FileEc::getGridValues(int iVar) const {
       int dim;
       nc_inq_vardimid(mFile, iVar, &dim);
       long size = getDimSize(dim);
-      float* values = new float[size];
-      nc_get_var_float(mFile, iVar, values);
+      std::vector<float> values(size);
+      nc_get_var_float(mFile, iVar, values.data());
       // Latitude variable
       if(dim == getLatDim()) {
          for(int i = 0; i < getNumLat(); i++) {
@@ -303,7 +300,6 @@ vec2 FileEc::getGridValues(int iVar) const {
          ss << "Missing lat or lon dimension";
          Util::error(ss.str());
       }
-      delete[] values;
    }
    // We have a projected grid, where lat and lons are provided for each grid point
    else {
@@ -334,8 +330,8 @@ vec2 FileEc::getGridValues(int iVar) const {
          ss << "Missing lat and/or lon dimensions";
          Util::error(ss.str());
       }
-      float* values = new float[size];
-      nc_get_var_float(mFile, iVar, values);
+      std::vector<float> values(size);
+      nc_get_var_float(mFile, iVar, values.data());
       for(int i = 0; i < getNumLat(); i++) {
          for(int j = 0; j < getNumLon(); j++) {
             // Latitude dimension is ordered first
@@ -348,7 +344,6 @@ vec2 FileEc::getGridValues(int iVar) const {
             }
          }
       }
-      delete[] values;
    }
    return grid;
 }
@@ -428,7 +423,7 @@ void FileEc::writeAltitude() const {
       }
    }
    float MV = getMissingValue(vElev);
-   float* values = new float[size];
+   std::vector<float> values(size);
    vec2 elevs = getElevs();
    for(int i = 0; i < getNumLat(); i++) {
       for(int j = 0; j < getNumLon(); j++) {
@@ -445,6 +440,5 @@ void FileEc::writeAltitude() const {
          }
       }
    }
-   nc_put_var_float(mFile, vElev, values);
-   delete[] values;
+   nc_put_var_float(mFile, vElev, values.data());
 }

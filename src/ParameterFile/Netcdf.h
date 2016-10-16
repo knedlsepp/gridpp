@@ -46,8 +46,7 @@ class ParameterFileNetcdf : public ParameterFile {
       std::vector<int> getIndices(int i, const std::vector<int>& iCount) const;
 
       // Read variable from file, convert missing values
-      // User must release memory
-      float* getNcFloats(int iFile, int iVar);
+      std::vector<float> getNcFloats(int iFile, int iVar);
 
       // Reads lat/lon/elev values from the variable, regardless of the order of the x, y dimensions
       // For lat/lon, the variable can have one or two dimensions. If the former, then the values

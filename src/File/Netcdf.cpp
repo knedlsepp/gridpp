@@ -203,7 +203,6 @@ std::string FileNetcdf::getAttribute(std::string iVariable, std::string iName) {
 }
 
 std::string FileNetcdf::getAttribute(int iVar, std::string iName) {
-   std::string ret = "";
    int id;
    int status = nc_inq_attid(mFile, iVar, iName.c_str(), &id);
    if(status == NC_NOERR) {
@@ -217,16 +216,13 @@ std::string FileNetcdf::getAttribute(int iVar, std::string iName) {
          Util::warning(ss.str());
       }
       else {
-         char* value = new char[len+1];
-         status = nc_get_att_text(mFile, iVar, iName.c_str(), value);
+         std::vector<char> value(len+1, '\0');
+         status = nc_get_att_text(mFile, iVar, iName.c_str(), value.data());
          handleNetcdfError(status, "could not get attribute");
-         value[len] = '\0';
          if(status == NC_NOERR)
-            ret = std::string(value);
-         delete[] value;
+            return std::string(value.data());
       }
    }
-   return ret;
 }
 
 std::string FileNetcdf::getGlobalAttribute(std::string iName) {
@@ -244,16 +240,13 @@ std::string FileNetcdf::getGlobalAttribute(std::string iName) {
          Util::warning(ss.str());
       }
       else {
-         char* value = new char[len+1];
-         status = nc_get_att_text(mFile, NC_GLOBAL, iName.c_str(), value);
+         std::vector<char> value(len+1, '\0');
+         status = nc_get_att_text(mFile, NC_GLOBAL, iName.c_str(), value.data());
          handleNetcdfError(status, "could not get global attribute");
-         value[len] = '\0';
          if(status == NC_NOERR)
-            ret = std::string(value);
-         delete[] value;
+            return std::string(value.data());
       }
    }
-   return ret;
 }
 
 void FileNetcdf::defineTimes() {
