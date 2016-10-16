@@ -18,9 +18,8 @@ class SetupTrain {
       std::vector<std::unique_ptr<File>> forecasts;
       std::vector<std::unique_ptr<File>> observations;
       std::unique_ptr<Calibrator> method;
-      Downscaler* downscaler;
+      std::unique_ptr<Downscaler> downscaler;
       Variable::Type variable;
       SetupTrain(const std::vector<std::string>& argv);
-      ~SetupTrain();
 };
 #endif

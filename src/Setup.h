@@ -15,7 +15,7 @@ struct VariableConfiguration {
    //! Which variable should be post-processed?
    Variable::Type variable;
    //! Which downscaler should be used
-   Downscaler* downscaler;
+   std::unique_ptr<Downscaler> downscaler;
    //! Which calibrators should be use
    std::vector<std::unique_ptr<Calibrator>> calibrators;
    Options variableOptions;
@@ -35,7 +35,6 @@ class Setup {
       Options outputOptions;
       std::vector<VariableConfiguration> variableConfigurations;
       Setup(const std::vector<std::string>& argv);
-      ~Setup();
       static std::string defaultDownscaler();
    private:
       // In some cases, it is not possible to open the same file first as readonly and then writeable

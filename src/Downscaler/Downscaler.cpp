@@ -19,16 +19,15 @@ bool Downscaler::downscale(const File& iInput, File& iOutput) const {
    return true;
 }
 
-Downscaler* Downscaler::getScheme(std::string iName, Variable::Type iVariable, const Options& iOptions) {
+std::unique_ptr<Downscaler> Downscaler::getScheme(std::string iName, Variable::Type iVariable, const Options& iOptions) {
    if(iName == "nearestNeighbour") {
-      return new DownscalerNearestNeighbour(iVariable, iOptions);
+      return std::make_unique<DownscalerNearestNeighbour>(iVariable, iOptions);
    }
    else if(iName == "gradient") {
-      DownscalerGradient* d = new DownscalerGradient(iVariable, iOptions);
-      return d;
+      return std::make_unique<DownscalerGradient>(iVariable, iOptions);
    }
    else if(iName == "smart") {
-      DownscalerSmart* d = new DownscalerSmart(iVariable, iOptions);
+      std::unique_ptr<DownscalerSmart> d = std::make_unique<DownscalerSmart>(iVariable, iOptions);
       float searchRadius = Util::MV;
       if(iOptions.getValue("searchRadius", searchRadius)) {
          d->setSearchRadius(searchRadius);
@@ -41,15 +40,13 @@ Downscaler* Downscaler::getScheme(std::string iName, Variable::Type iVariable, c
       if(iOptions.getValue("minElevDiff", minElevDiff)) {
          d->setMinElevDiff(minElevDiff);
       }
-      return d;
+      return std::move(d);
    }
    else if(iName == "bypass") {
-      DownscalerBypass* d = new DownscalerBypass(iVariable, iOptions);
-      return d;
+      return std::make_unique<DownscalerBypass>(iVariable, iOptions);
    }
    else if(iName == "pressure") {
-      DownscalerPressure* d = new DownscalerPressure(iVariable, iOptions);
-      return d;
+      return std::make_unique<DownscalerPressure>(iVariable, iOptions);
    }
    else {
       Util::error("Could not instantiate downscaler of type '" + iName + "'");

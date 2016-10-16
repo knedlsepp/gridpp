@@ -18,12 +18,11 @@ class SetupKf {
       std::unique_ptr<File> fcstFile;
       std::unique_ptr<File> obsFile;
       Calibrator* method;
-      Downscaler* downscaler; // Not used
+      std::unique_ptr<Downscaler> downscaler; // Not used
       Variable::Type variable;
       std::unique_ptr<ParameterFile> dbin;
       std::unique_ptr<ParameterFile> dbout;
       Options options;
       SetupKf(const std::vector<std::string>& argv);
-      ~SetupKf();
 };
 #endif

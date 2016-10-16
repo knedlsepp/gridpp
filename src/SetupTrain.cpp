@@ -240,6 +240,3 @@ SetupTrain::SetupTrain(const std::vector<std::string>& argv) {
       Util::error(ss.str());
    }
 }
-SetupTrain::~SetupTrain() {
-   delete downscaler;
-}

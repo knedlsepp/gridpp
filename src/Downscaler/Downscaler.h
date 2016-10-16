@@ -15,7 +15,7 @@ class Downscaler : public Scheme {
       Downscaler(Variable::Type iVariable, const Options& iOptions);
       virtual ~Downscaler() {};
       bool downscale(const File& iInput, File& iOutput) const;
-      static Downscaler* getScheme(std::string iName, Variable::Type iVariable, const Options& iOptions);
+      static std::unique_ptr<Downscaler> getScheme(std::string iName, Variable::Type iVariable, const Options& iOptions);
       virtual std::string name() const = 0;
 
       //! Create a nearest-neighbour map. For each grid point in iTo, find the index into the grid

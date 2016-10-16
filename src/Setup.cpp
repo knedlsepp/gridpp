@@ -167,10 +167,10 @@ Setup::Setup(const std::vector<std::string>& argv) {
 
          if(!alreadyExists) {
             dOptions.addOption("variable", Variable::getTypeName(variable));
-            Downscaler* d = Downscaler::getScheme(downscaler, variable, dOptions);
+            std::unique_ptr<Downscaler> d = Downscaler::getScheme(downscaler, variable, dOptions);
             VariableConfiguration varconf;
             varconf.variable = variable;
-            varconf.downscaler = d;
+            varconf.downscaler = std::move(d);
             varconf.parameterFileDownscaler = std::move(parameterFileDownscaler);
             varconf.calibrators = std::move(calibrators);
             varconf.parameterFileCalibrators = std::move(parameterFileCalibrators);
@@ -463,11 +463,7 @@ Setup::Setup(const std::vector<std::string>& argv) {
       }
    }
 }
-Setup::~Setup() {
-   for(int i = 0; i < variableConfigurations.size(); i++) {
-      delete variableConfigurations[i].downscaler;
-   }
-}
+
 std::string Setup::defaultDownscaler() {
    return "nearestNeighbour";
 }

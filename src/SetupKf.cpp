@@ -12,7 +12,6 @@ SetupKf::SetupKf(const std::vector<std::string>& argv) {
    // Set initial non-working values
    variable = Variable::None;
    fcstFile = NULL;
-   downscaler = NULL; // Downscaler::getScheme("nearestNeighbour", Variable::T, Options());
 
    // Process obs/fcst filenames and options
    Options obsOptions, fcstOptions;
@@ -126,7 +125,4 @@ SetupKf::SetupKf(const std::vector<std::string>& argv) {
       Util::error("Missing variable");
    if(!output)
       Util::error("Missing output");
-}
-SetupKf::~SetupKf() {
-   delete downscaler;
 }
