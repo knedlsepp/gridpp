@@ -2,7 +2,7 @@ language: cpp
 script: 
   - make 
   - make debug
-  - make check
+  - make test
 compiler:
   - gcc
   - clang
