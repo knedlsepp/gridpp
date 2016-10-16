@@ -22,6 +22,7 @@ addons:
     - libblas-dev
     - libboost-all-dev
     - libnetcdf-dev
+    - libgtest-dev
 notifications:
   email: false
 sudo: false
