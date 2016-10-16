@@ -11,7 +11,6 @@ SetupTrain::SetupTrain(const std::vector<std::string>& argv) {
 
    // Set initial non-working values
    variable = Variable::None;
-   output = NULL;
 
    // Implement a finite state machine
    enum State {START = 0, OUTPUT = 1, OUTPUTOPT = 2, METHOD = 3, METHODOPT = 10, VAR = 20, END = 90, ERROR = 100};
@@ -235,7 +234,7 @@ SetupTrain::SetupTrain(const std::vector<std::string>& argv) {
       ss << "Could not understand command line arguments: Missing -c.";
       Util::error(ss.str());
    }
-   if(output == NULL) {
+   if(!output) {
       std::stringstream ss;
       ss << "Could not understand command line arguments: Missing -p.";
       Util::error(ss.str());
@@ -246,6 +245,5 @@ SetupTrain::~SetupTrain() {
       delete observations[i];
    for(int i = 0; i < forecasts.size(); i++)
       delete forecasts[i];
-   delete output;
    delete downscaler;
 }

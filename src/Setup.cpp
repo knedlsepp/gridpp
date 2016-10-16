@@ -93,8 +93,8 @@ Setup::Setup(const std::vector<std::string>& argv) {
    std::string calibrator = "";
    std::string parameterFile = "";
    std::vector<std::unique_ptr<Calibrator>> calibrators;
-   std::vector<ParameterFile*> parameterFileCalibrators;
-   ParameterFile* parameterFileDownscaler = NULL;
+   std::vector<std::unique_ptr<ParameterFile>> parameterFileCalibrators;
+   std::unique_ptr<ParameterFile> parameterFileDownscaler;
    while(true) {
       // std::cout << state << std::endl;
       if(state != ERROR)
@@ -180,9 +180,9 @@ Setup::Setup(const std::vector<std::string>& argv) {
             VariableConfiguration varconf;
             varconf.variable = variable;
             varconf.downscaler = d;
-            varconf.parameterFileDownscaler = parameterFileDownscaler;
+            varconf.parameterFileDownscaler = std::move(parameterFileDownscaler);
             varconf.calibrators = std::move(calibrators);
-            varconf.parameterFileCalibrators = parameterFileCalibrators;
+            varconf.parameterFileCalibrators = std::move(parameterFileCalibrators);
             varconf.variableOptions = vOptions;
             variableConfigurations.push_back(std::move(varconf));
          }
@@ -193,7 +193,7 @@ Setup::Setup(const std::vector<std::string>& argv) {
          // Reset to defaults
          vOptions.clear();
          downscaler = defaultDownscaler();
-         parameterFileDownscaler = NULL;
+         parameterFileDownscaler = nullptr;
          dOptions.clear();
          calibrators.clear();
          parameterFileCalibrators.clear();
@@ -424,7 +424,7 @@ Setup::Setup(const std::vector<std::string>& argv) {
          // We do not need to check that the same calibrator has been added for this variable
          // since this is perfectly fine (e.g. smoothing twice).
 
-         ParameterFile* p = NULL;
+         std::unique_ptr<ParameterFile> p = nullptr;
          if(parameterFile != "") {
             p = ParameterFile::getScheme(parameterFile, pOptions);
             if(!p->isReadable()) {
@@ -435,7 +435,7 @@ Setup::Setup(const std::vector<std::string>& argv) {
          if(state != ERROR) {
             cOptions.addOption("variable", Variable::getTypeName(variable));
             calibrators.push_back(Calibrator::getScheme(calibrator, cOptions));
-            parameterFileCalibrators.push_back(p);
+            parameterFileCalibrators.push_back(std::move(p));
 
             // Reset
             calibrator = "";

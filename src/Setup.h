@@ -19,8 +19,8 @@ struct VariableConfiguration {
    //! Which calibrators should be use
    std::vector<std::unique_ptr<Calibrator>> calibrators;
    Options variableOptions;
-   std::vector<ParameterFile*> parameterFileCalibrators;
-   ParameterFile* parameterFileDownscaler;
+   std::vector<std::unique_ptr<ParameterFile>> parameterFileCalibrators;
+   std::unique_ptr<ParameterFile> parameterFileDownscaler;
 };
 
 //! Represents what and how the post-processing should be done. Includes which input file to

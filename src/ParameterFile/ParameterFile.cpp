@@ -29,21 +29,21 @@ void ParameterFile::recomputeTree() const {
    mNearestNeighbourTree.build(lats, lons);
 }
 
-ParameterFile* ParameterFile::getScheme(std::string iName, const Options& iOptions, bool iIsNew) {
-   ParameterFile* p;
+std::unique_ptr<ParameterFile> ParameterFile::getScheme(std::string iName, const Options& iOptions, bool iIsNew) {
+   std::unique_ptr<ParameterFile> p;
    if(iName == "metnoKalman") {
-      p = new ParameterFileMetnoKalman(iOptions, iIsNew);
+      p = std::make_unique<ParameterFileMetnoKalman>(iOptions, iIsNew);
    }
    else if(iName == "text") {
-      p = new ParameterFileText(iOptions, iIsNew);
+      p = std::make_unique<ParameterFileText>(iOptions, iIsNew);
    }
    else if(iName == "netcdf") {
-      p = new ParameterFileNetcdf(iOptions, iIsNew);
+      p = std::make_unique<ParameterFileNetcdf>(iOptions, iIsNew);
    }
    else {
       Util::error("Parameter file type '" + iName + "' not recognized");
    }
-   return p;
+   return std::move(p);
 }
 
 Parameters ParameterFile::getParameters(int iTime) const {

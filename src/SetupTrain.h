@@ -14,7 +14,7 @@ class File;
 //! and what post-processing method to train.
 class SetupTrain {
    public:
-      ParameterFile* output;
+      std::unique_ptr<ParameterFile> output;
       std::vector<File*> forecasts;
       std::vector<File*> observations;
       std::unique_ptr<Calibrator> method;

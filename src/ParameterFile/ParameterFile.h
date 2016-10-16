@@ -25,7 +25,7 @@ class ParameterFile : public Scheme {
       //! Only use this if isLocationDependent() is false otherwise an error occurs
       Parameters getParameters(int iTime) const;
 
-      static ParameterFile* getScheme(std::string iName, const Options& iOptions, bool iIsNew=false);
+      static std::unique_ptr<ParameterFile> getScheme(std::string iName, const Options& iOptions, bool iIsNew=false);
       //! Finds the nearest parameter location with valid data at time iTime. Returns true if a
       //! location is found and location is stored in iNearestLocation. If no locations are available,
       //! false is returned.
