@@ -1,38 +1,25 @@
-sudo: required
-
-env:
- - DIST=precise
- - DIST=trusty
- - DIST=xenial
-
-before_install:
- - sudo apt-get update -qq
- - sudo apt-get install pbuilder aptitude ubuntu-dev-tools libgsl0-dev libblas-dev
-# Temporary hack to get pbuilder to work
- - sudo sed '286,289d' /usr/bin/pbuilder-dist > temp
- - sudo mv temp /usr/bin/pbuilder-dist
- - sudo chmod a+x /usr/bin/pbuilder-dist
- - for CHAR in $(seq 0 9) a b c d e f; do sudo mkdir -p /var/cache/pbuilder/ccache/${CHAR}; done
- - pbuilder-dist ${DIST} create --debootstrapopts --variant=buildd
- - sudo pip install cpp-coveralls
-
-script:
- - sed -i "s:precise:${DIST}:g" debian/changelog
- - debuild -S -uc
- - pbuilder-dist ${DIST} build ../*.dsc
-# Rebuild so that coverage stats can be collected
- - sudo debuild-pbuilder -us -uc
-
-after_success: coveralls --gcov-options '\-lp'
-
-os: linux
-
-#deploy:
-#  provider: launchpad
-#  slug: "~christian-skarby/gridpp/master"
-#  oauth_token:
-#    secure: "QNH5xUjkO3sP26Ncd5e8m6yV9LVP9Qhdku9uar+EDEZccy2amwNfi0RZ3mhalw8wvJUTbKwJGAzxoWCGUspg2ptRUngKNgmuLSYpCxNKJpm5bQrBBgyhAWsQFOpOqk+nEFKUiWnAe5mgP2MU89+ZWEk5TK5vBt1wclK8CaZ+dwo="
-#  oauth_token_secret:
-#    secure: "b/4eRApZpX3ytYcIf2Z+F5j398/zQnU8sszsZeKkZU/q5j5TF1B5dmRVODIB2JvGhXqukHUdhu7p1oja/GcAZ4a+VF3IuxIe/HaSCMHUoryeNeIzjPhpCBDY21U7kFkPjbMVJGuVcMvOXcpRJ7b5baiW/iGyFx/z3WGSN8Z7R+k="
-#  on:
-#    tags: true
+language: cpp
+script: 
+  - make 
+  - make debug
+  - make check
+compiler:
+  - gcc
+  - clang
+install:
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.8
+    - g++-4.8
+    - clang
+    - libgsl0-dev
+    - libblas-dev
+    - libboost-all-dev
+    - libnetcdf-dev
+notifications:
+  email: false
+sudo: false
