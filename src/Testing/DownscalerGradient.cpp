@@ -8,15 +8,13 @@ namespace {
    class TestDownscalerGradient : public ::testing::Test {
       public:
          void SetUp() {
-            mFrom = new FileArome("testing/files/10x10.nc");
+            mFrom = std::make_unique<FileArome>("testing/files/10x10.nc");
             std::stringstream ss;
             ss << "nLat=1 nLon=4 nEns=1 nTime=" << mFrom->getNumTime();
-            mTo = new FileFake(Options(ss.str()));
+            mTo = std::make_unique<FileFake>(Options(ss.str()));
             setLatLonElev(*mTo, (const float[]) {5}, (const float[]){2,2,12,20}, (const float[]){120, 1500, 600, -100});
          }
          void TearDown() {
-            delete mFrom;
-            delete mTo;
          }
          vec2 makeVec2(int nLat, int nLon, const std::vector<float>& values) {
             vec2 grid;
@@ -55,8 +53,8 @@ namespace {
             iFile.setElevs(elev);
          };
       protected:
-         FileArome* mFrom;
-         FileFake* mTo;
+         std::unique_ptr<FileArome> mFrom;
+         std::unique_ptr<FileFake> mTo;
    };
 
    TEST_F(TestDownscalerGradient, 10x10) {
