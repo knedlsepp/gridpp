@@ -112,8 +112,7 @@ namespace {
    }
    TEST_F(TestCalibrator, factoryZaga) {
       {
-         Calibrator* c;
-         c = Calibrator::getScheme("zaga", Options("variable=T popThreshold=0.24 outputPop=1 fracThreshold=0.34 neighbourhoodSize=24 maxEnsMean=90"));
+         std::unique_ptr<Calibrator> c = Calibrator::getScheme("zaga", Options("variable=T popThreshold=0.24 outputPop=1 fracThreshold=0.34 neighbourhoodSize=24 maxEnsMean=90"));
          EXPECT_TRUE(c);
          EXPECT_EQ("zaga", c->name());
          EXPECT_FLOAT_EQ(0.24, ((CalibratorZaga*) c)->getPopThreshold());
@@ -121,11 +120,9 @@ namespace {
          EXPECT_FLOAT_EQ(0.34, ((CalibratorZaga*) c)->getFracThreshold());
          EXPECT_EQ(24,         ((CalibratorZaga*) c)->getNeighbourhoodSize());
          EXPECT_FLOAT_EQ(90,          ((CalibratorZaga*) c)->getMaxEnsMean());
-         delete c;
       }
       {
-         Calibrator* c;
-         c = Calibrator::getScheme("zaga", Options("variable=T popThreshold=-0.12 outputPop=0 fracThreshold=-0.92 neighbourhoodSize=6 maxEnsMean=40"));
+         std::unique_ptr<Calibrator> c = Calibrator::getScheme("zaga", Options("variable=T popThreshold=-0.12 outputPop=0 fracThreshold=-0.92 neighbourhoodSize=6 maxEnsMean=40"));
          EXPECT_TRUE(c);
          EXPECT_EQ("zaga", c->name());
          EXPECT_FLOAT_EQ(-0.12, ((CalibratorZaga*) c)->getPopThreshold());
@@ -133,101 +130,74 @@ namespace {
          EXPECT_FLOAT_EQ(-0.92, ((CalibratorZaga*) c)->getFracThreshold());
          EXPECT_EQ(6,           ((CalibratorZaga*) c)->getNeighbourhoodSize());
          EXPECT_FLOAT_EQ(40,          ((CalibratorZaga*) c)->getMaxEnsMean());
-         delete c;
       }
    }
    TEST_F(TestCalibrator, factoryNeighbourhood) {
-      Calibrator* c;
-      c = Calibrator::getScheme("neighbourhood", Options("variable=Precip radius=3"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("neighbourhood", Options("variable=Precip radius=3"));
       EXPECT_TRUE(c);
       EXPECT_EQ("neighbourhood", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryQc) {
-      Calibrator* c;
-      c = Calibrator::getScheme("qc", Options("variable=Precip m3"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("qc", Options("variable=Precip m3"));
       EXPECT_TRUE(c);
       EXPECT_EQ("qc", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryPhase) {
-      Calibrator* c;
-      c = Calibrator::getScheme("phase", Options("variable=Precip minPrecip=0.771 useWetbulb=0"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("phase", Options("variable=Precip minPrecip=0.771 useWetbulb=0"));
       EXPECT_TRUE(c);
       EXPECT_EQ("phase", c->name());
       EXPECT_FLOAT_EQ(0.771, ((CalibratorPhase*) c)->getMinPrecip());
       EXPECT_FALSE(((CalibratorPhase*) c)->getUseWetbulb());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryGaussian) {
-      Calibrator* c;
-      c = Calibrator::getScheme("gaussian", Options("variable=Precip"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("gaussian", Options("variable=Precip"));
       EXPECT_TRUE(c);
       EXPECT_EQ("gaussian", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryDiagnose) {
-      Calibrator* c;
-      c = Calibrator::getScheme("diagnose", Options("variable=W"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("diagnose", Options("variable=W"));
       EXPECT_TRUE(c);
       EXPECT_EQ("diagnose", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryRegression) {
-      Calibrator* c;
-      c = Calibrator::getScheme("regression", Options("variable=Precip"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("regression", Options("variable=Precip"));
       EXPECT_TRUE(c);
       EXPECT_EQ("regression", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryQnh) {
-      Calibrator* c;
-      c = Calibrator::getScheme("qnh", Options("variable=Precip"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("qnh", Options("variable=Precip"));
       EXPECT_TRUE(c);
       EXPECT_EQ("qnh", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryWindow) {
-      Calibrator* c;
-      c = Calibrator::getScheme("window", Options("variable=Precip radius=2 stat=quantile quantile=0.5"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("window", Options("variable=Precip radius=2 stat=quantile quantile=0.5"));
       EXPECT_TRUE(c);
       EXPECT_EQ("window", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryKriging) {
-      Calibrator* c;
-      c = Calibrator::getScheme("kriging", Options("variable=Precip radius=100 maxElevDiff=100 efoldDist=2"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("kriging", Options("variable=Precip radius=100 maxElevDiff=100 efoldDist=2"));
       EXPECT_TRUE(c);
       EXPECT_EQ("kriging", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryQq) {
-      Calibrator* c;
-      c = Calibrator::getScheme("qq", Options("variable=Precip"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("qq", Options("variable=Precip"));
       EXPECT_TRUE(c);
       EXPECT_EQ("qq", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factorySort) {
-      Calibrator* c;
-      c = Calibrator::getScheme("sort", Options("variable=Precip"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("sort", Options("variable=Precip"));
       EXPECT_TRUE(c);
       EXPECT_EQ("sort", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryBct) {
-      Calibrator* c;
-      c = Calibrator::getScheme("bct", Options("variable=W"));
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("bct", Options("variable=W"));
       EXPECT_TRUE(c);
       EXPECT_EQ("bct", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryAltitude) {
-      Calibrator* c;
-      c = Calibrator::getScheme("altitude", Options());
+      std::unique_ptr<Calibrator> c = Calibrator::getScheme("altitude", Options());
       EXPECT_TRUE(c);
       EXPECT_EQ("altitude", c->name());
-      delete c;
    }
    TEST_F(TestCalibrator, factoryValid) {
       Calibrator::getScheme("zaga", Options("variable=T"));

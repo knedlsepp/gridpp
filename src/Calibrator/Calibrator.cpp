@@ -10,51 +10,45 @@
 Calibrator::Calibrator(const Options& iOptions) : Scheme(iOptions) {
 
 }
-Calibrator* Calibrator::getScheme(std::string iName, const Options& iOptions) {
+std::unique_ptr<Calibrator> Calibrator::getScheme(std::string iName, const Options& iOptions) {
 
    if(iName == "zaga") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'zaga' needs variable");
       }
-      CalibratorZaga* c = new CalibratorZaga(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorZaga>(Variable::getType(variable), iOptions);
    }
    else if(iName == "cloud") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'cloud' needs variable");
       }
-      CalibratorCloud* c = new CalibratorCloud(Variable::getType(variable), iOptions);
-      return c;
+      return std::make_unique<CalibratorCloud>(Variable::getType(variable), iOptions);
    }
    else if(iName == "accumulate") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'accumulate' needs variable");
       }
-      CalibratorAccumulate* c = new CalibratorAccumulate(Variable::getType(variable), iOptions);
-      return c;
+      return std::make_unique<CalibratorAccumulate>(Variable::getType(variable), iOptions);
    }
    else if(iName == "gaussian") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'gaussian' needs variable");
       }
-      CalibratorGaussian* c = new CalibratorGaussian(Variable::getType(variable), iOptions);
-      return c;
+      return std::make_unique<CalibratorGaussian>(Variable::getType(variable), iOptions);
    }
    else if(iName == "neighbourhood") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'neighbourhood' needs variable");
       }
-      CalibratorNeighbourhood* c = new CalibratorNeighbourhood(Variable::getType(variable), iOptions);
-      return c;
+      return std::make_unique<CalibratorNeighbourhood>(Variable::getType(variable), iOptions);
    }
    else if(iName == "phase") {
-      CalibratorPhase* c = new CalibratorPhase(iOptions);
+      std::unique_ptr<CalibratorPhase> c = std::make_unique<CalibratorPhase>(iOptions);
       float minPrecip;
       if(iOptions.getValue("minPrecip", minPrecip)) {
          c->setMinPrecip(minPrecip);
@@ -64,98 +58,76 @@ Calibrator* Calibrator::getScheme(std::string iName, const Options& iOptions) {
          c->setUseWetbulb(useWetbulb);
       }
 
-      return c;
+      return std::move(c);
    }
    else if(iName == "windDirection") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'windDirection' needs variable");
       }
-      CalibratorWindDirection* c = new CalibratorWindDirection(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorWindDirection>(Variable::getType(variable), iOptions);
    }
    else if(iName == "kriging") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'kriging' needs variable");
       }
-      CalibratorKriging* c = new CalibratorKriging(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorKriging>(Variable::getType(variable), iOptions);
    }
    else if(iName == "diagnose") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'diagnose' needs variable");
       }
-      CalibratorDiagnose* c = new CalibratorDiagnose(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorDiagnose>(Variable::getType(variable), iOptions);
    }
    else if(iName == "window") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'window' needs variable");
       }
-      CalibratorWindow* c = new CalibratorWindow(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorWindow>(Variable::getType(variable), iOptions);
    }
    else if(iName == "qc") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'qc' needs variable");
       }
-      CalibratorQc* c = new CalibratorQc(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorQc>(Variable::getType(variable), iOptions);
    }
    else if(iName == "qnh") {
-      CalibratorQnh* c = new CalibratorQnh(iOptions);
-
-      return c;
+      return std::make_unique<CalibratorQnh>(iOptions);
    }
    else if(iName == "qq") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'regression' needs variable");
       }
-      CalibratorQq* c = new CalibratorQq(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorQq>(Variable::getType(variable), iOptions);
    }
    else if(iName == "regression") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'regression' needs variable");
       }
-      CalibratorRegression* c = new CalibratorRegression(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorRegression>(Variable::getType(variable), iOptions);
    }
    else if(iName == "bct") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'bct' needs variable");
       }
-      CalibratorBct* c = new CalibratorBct(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorBct>(Variable::getType(variable), iOptions);
    }
    else if(iName == "sort") {
       std::string variable;
       if(!iOptions.getValue("variable", variable)) {
          Util::error("Calibrator 'sort' needs variable");
       }
-      CalibratorSort* c = new CalibratorSort(Variable::getType(variable), iOptions);
-
-      return c;
+      return std::make_unique<CalibratorSort>(Variable::getType(variable), iOptions);
    }
    else if(iName == "altitude") {
-      CalibratorAltitude* c = new CalibratorAltitude(iOptions);
-
-      return c;
+      return std::make_unique<CalibratorAltitude>(iOptions);
    }
    else {
       Util::error("Could not instantiate calibrator with name '" + iName + "'");

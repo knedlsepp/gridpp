@@ -17,7 +17,7 @@ class SetupTrain {
       ParameterFile* output;
       std::vector<File*> forecasts;
       std::vector<File*> observations;
-      Calibrator* method;
+      std::unique_ptr<Calibrator> method;
       Downscaler* downscaler;
       Variable::Type variable;
       SetupTrain(const std::vector<std::string>& argv);

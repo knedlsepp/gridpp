@@ -21,7 +21,7 @@ Here is a recipe for adding a new calibration method called MyMethod:
   .. code-block:: c++
 
     else if(iName == "myMethod") {
-      CalibratorMyMethod* c = new CalibratorMyMethod(Variable::getType(variable));
+      return std::make_unique<CalibratorMyMethod>(Variable::getType(variable));
     }
 
 5) Add the following to src/Driver/Gridpp.cpp so that the description of your method shows up in gridpp's

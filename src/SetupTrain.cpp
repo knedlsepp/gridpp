@@ -11,7 +11,6 @@ SetupTrain::SetupTrain(const std::vector<std::string>& argv) {
 
    // Set initial non-working values
    variable = Variable::None;
-   method = NULL;
    output = NULL;
 
    // Implement a finite state machine
@@ -231,7 +230,7 @@ SetupTrain::SetupTrain(const std::vector<std::string>& argv) {
          abort();
       }
    }
-   if(method == NULL) {
+   if(method) {
       std::stringstream ss;
       ss << "Could not understand command line arguments: Missing -c.";
       Util::error(ss.str());
@@ -248,6 +247,5 @@ SetupTrain::~SetupTrain() {
    for(int i = 0; i < forecasts.size(); i++)
       delete forecasts[i];
    delete output;
-   delete method;
    delete downscaler;
 }

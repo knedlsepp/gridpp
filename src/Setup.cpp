@@ -92,7 +92,7 @@ Setup::Setup(const std::vector<std::string>& argv) {
    std::string downscaler = defaultDownscaler();
    std::string calibrator = "";
    std::string parameterFile = "";
-   std::vector<Calibrator*> calibrators;
+   std::vector<std::unique_ptr<Calibrator>> calibrators;
    std::vector<ParameterFile*> parameterFileCalibrators;
    ParameterFile* parameterFileDownscaler = NULL;
    while(true) {
@@ -181,10 +181,10 @@ Setup::Setup(const std::vector<std::string>& argv) {
             varconf.variable = variable;
             varconf.downscaler = d;
             varconf.parameterFileDownscaler = parameterFileDownscaler;
-            varconf.calibrators = calibrators;
+            varconf.calibrators = std::move(calibrators);
             varconf.parameterFileCalibrators = parameterFileCalibrators;
             varconf.variableOptions = vOptions;
-            variableConfigurations.push_back(varconf);
+            variableConfigurations.push_back(std::move(varconf));
          }
          else {
             Util::warning("Variable '" + Variable::getTypeName(variable) + "' already read. Using first instance.");
@@ -434,8 +434,7 @@ Setup::Setup(const std::vector<std::string>& argv) {
          }
          if(state != ERROR) {
             cOptions.addOption("variable", Variable::getTypeName(variable));
-            Calibrator* c = Calibrator::getScheme(calibrator, cOptions);
-            calibrators.push_back(c);
+            calibrators.push_back(Calibrator::getScheme(calibrator, cOptions));
             parameterFileCalibrators.push_back(p);
 
             // Reset
@@ -480,9 +479,6 @@ Setup::~Setup() {
 
    for(int i = 0; i < variableConfigurations.size(); i++) {
       delete variableConfigurations[i].downscaler;
-      for(int c = 0; c < variableConfigurations[i].calibrators.size(); c++) {
-         delete variableConfigurations[i].calibrators[c];
-      }
    }
 }
 std::string Setup::defaultDownscaler() {

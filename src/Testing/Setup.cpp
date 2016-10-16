@@ -51,7 +51,7 @@ namespace {
    TEST(SetupTest, complicated) {
       MetSetup setup(Util::split("testing/files/10x10.nc testing/files/10x10.nc -v T -d nearestNeighbour -d smart -c neighbourhood -c accumulate -c neighbourhood -v Precip -c zaga -p text file=testing/files/parameters.txt -d gradient"));
       ASSERT_EQ(2,            setup.variableConfigurations.size());
-      VariableConfiguration varconf = setup.variableConfigurations[0];
+      VariableConfiguration& varconf = setup.variableConfigurations[0];
       EXPECT_EQ(Variable::T,  varconf.variable);
       EXPECT_EQ("smart",      varconf.downscaler->name());
       ASSERT_EQ(3,            varconf.calibrators.size());
@@ -67,7 +67,7 @@ namespace {
    TEST(SetupTest, variableOptionsSingle) {
       MetSetup setup(Util::split("testing/files/10x10.nc testing/files/10x10.nc -v T write=0"));
       ASSERT_EQ(1,            setup.variableConfigurations.size());
-      VariableConfiguration varconf = setup.variableConfigurations[0];
+      VariableConfiguration& varconf = setup.variableConfigurations[0];
 
       Options vOptions = varconf.variableOptions;
       bool doWrite = true;
@@ -78,7 +78,7 @@ namespace {
    TEST(SetupTest, variableOptionsMultiple) {
       MetSetup setup(Util::split("testing/files/10x10.nc testing/files/10x10.nc -v T -v P write=0 -v RH -v U test=2 -d smart -v V -v Precip new=2.1 -c neighbourhood"));
       ASSERT_EQ(6,            setup.variableConfigurations.size());
-      VariableConfiguration varconf = setup.variableConfigurations[0];
+      VariableConfiguration& varconf = setup.variableConfigurations[0];
 
       EXPECT_EQ(Variable::T, varconf.variable);
       Options vOptions = varconf.variableOptions;

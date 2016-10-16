@@ -22,7 +22,7 @@ class Calibrator : public Scheme {
       bool calibrate(File& iFile, const ParameterFile* iParameterFile=NULL) const;
 
       //! Instantiates a calibrator with name iName
-      static Calibrator* getScheme(std::string iName, const Options& iOptions);
+      static std::unique_ptr<Calibrator> getScheme(std::string iName, const Options& iOptions);
 
       //! \brief Ensure that values in iAfter are in the same order as in iBefore.
       //! If missing values are encountered in iBefore or iAfter, then iAfter is left unchanged.

@@ -99,7 +99,7 @@ int main(int argc, const char *argv[]) {
       std::vector<Variable::Type> writeVariables;
       for(int v = 0; v < setup.variableConfigurations.size(); v++) {
          double s = Util::clock();
-         VariableConfiguration varconf = setup.variableConfigurations[v];
+         VariableConfiguration& varconf = setup.variableConfigurations[v];
          Variable::Type variable = varconf.variable;
 
          bool write = 1;
